@@ -1,10 +1,12 @@
 :root {
   color-scheme: dark;
+  --color-background: #07090d;
   --color-text: #f5f3f0;
   --color-muted: rgba(245, 243, 240, 0.68);
   --color-accent: #7dd3fc;
   --nav-surface: rgba(12, 13, 15, 0.68);
   --nav-border: rgba(255, 255, 255, 0.13);
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 * {
@@ -18,27 +20,22 @@ body {
   min-height: 100vh;
   min-height: 100svh;
   margin: 0;
-  background: #07090d;
+  background: var(--color-background);
   color: var(--color-text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-ui);
 }
 
+/* Shared navigation */
 .site-header {
   position: relative;
   z-index: 1;
   width: 100%;
   padding: 20px 24px;
-  background: linear-gradient(180deg, rgba(7, 9, 13, 0.48), rgba(7, 9, 13, 0));
+  background: linear-gradient(180deg, rgba(7, 9, 13, 0.48), transparent);
   pointer-events: none;
 }
 
-.home-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-
+/* Mars scene */
 #mars-stage {
   display: grid;
   position: fixed;
@@ -48,13 +45,25 @@ body {
   overflow: hidden;
   background:
     radial-gradient(ellipse 58% 58% at 50% 56%, rgba(105, 43, 29, 0.17), rgba(32, 16, 14, 0.06) 48%, transparent 78%),
-    #07090d;
+    var(--color-background);
 }
 
 #mars-title {
   flex: 1;
   margin: 0;
-  font-family: "Helvetica Now Display", -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family:
+    "Helvetica Now Display",
+    -apple-system,
+    BlinkMacSystemFont,
+    "San Francisco",
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
   font-size: clamp(32px, 4vw, 64px);
   font-weight: 500;
   letter-spacing: -0.045em;
@@ -75,6 +84,7 @@ body {
   cursor: grabbing;
 }
 
+/* About page */
 .about-content {
   width: min(calc(100% - 48px), 600px);
   margin: auto;
@@ -116,6 +126,14 @@ body {
 .about-content a:hover {
   color: var(--color-accent);
   text-decoration-color: currentColor;
+}
+
+/* Navigation layout and controls */
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
 }
 
 .site-nav {
@@ -205,6 +223,7 @@ body {
   }
 }
 
+/* Respect reduced-motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
