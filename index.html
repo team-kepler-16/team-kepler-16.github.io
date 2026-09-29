@@ -25,7 +25,7 @@
       </nav>
     </header>
     <main id="mars-stage">
-      <canvas id="mars-canvas" role="img" aria-label="Mars globe with random interactive points that open Google. Hover over a point to pause rotation and show its red outline. Click and drag horizontally, or drag with one finger, to rotate it around its axis. Use the mouse wheel or a two-finger pinch to zoom. Select a point from the list to rotate it to the horizontal centerline while keeping its latitude.">
+      <canvas id="mars-canvas" role="img" aria-label="Mars globe with interactive points. Hover over a point to pause rotation and show its red outline. Click a point to open its window. Click and drag horizontally, or drag with one finger, to rotate it around its axis. Use the mouse wheel or a two-finger pinch to zoom. Select a point from the list to open its window and center it horizontally while keeping its latitude.">
         A slowly rotating 3D view of Mars with interactive points.
       </canvas>
       <aside class="points-panel" aria-labelledby="points-title">
@@ -54,6 +54,17 @@
           <li><button class="point-button" type="button" data-marker-index="17" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 18</span></button></li>
         </ol>
       </aside>
+      <section id="point-window" class="point-window" role="dialog" aria-labelledby="point-window-title" aria-hidden="true" hidden>
+        <div class="point-window-card">
+          <div class="point-window-heading">
+            <h2 id="point-window-title"><span data-i18n="pointPrefix">Point</span> <span id="point-window-number">1</span></h2>
+            <button id="point-window-close" class="point-window-close" type="button" data-i18n-aria-label="closeWindow" aria-label="Close window">×</button>
+          </div>
+          <div class="point-window-content">
+            <p class="point-window-caption" data-i18n="selectedPoint">Selected surface point</p>
+          </div>
+        </div>
+      </section>
     </main>
   </body>
 </html>

@@ -8,8 +8,10 @@ const translations = {
     aboutEyebrow: "Project / About the archive",
     pointsTitle: "Points",
     pointPrefix: "Point",
+    closeWindow: "Close window",
+    selectedPoint: "Selected surface point",
     language: "Language: English. Switch to Spanish",
-    marsCanvas: "Mars globe with random interactive points that open Google. Hover over a point to pause rotation and show its red outline. Click and drag horizontally, or drag with one finger, to rotate it around its axis. Use the mouse wheel or a two-finger pinch to zoom. Select a point from the list to rotate it to the horizontal centerline while keeping its latitude.",
+    marsCanvas: "Mars globe with interactive points. Hover over a point to pause rotation and show its red outline. Click a point to open its window. Click and drag horizontally, or drag with one finger, to rotate it around its axis. Use the mouse wheel or a two-finger pinch to zoom. Select a point from the list to open its window and center it horizontally while keeping its latitude.",
     mainTitle: "NASA: 50 Years of Landings on Mars",
     aboutTitle: "About",
     creditsTitle: "Credits",
@@ -25,8 +27,10 @@ const translations = {
     aboutEyebrow: "Proyecto / El archivo",
     pointsTitle: "Puntos",
     pointPrefix: "Punto",
+    closeWindow: "Cerrar ventana",
+    selectedPoint: "Punto de superficie seleccionado",
     language: "Idioma: español. Cambiar a inglés",
-    marsCanvas: "Globo de Marte con puntos interactivos aleatorios que abren Google. Pasá el mouse sobre un punto para pausar la rotación y mostrar su borde rojo. Hacé clic y arrastrá horizontalmente, o arrastrá con un dedo, para rotarlo sobre su eje. Usá la rueda del mouse o el gesto de pellizcar con dos dedos para acercar o alejar. Elegí un punto de la lista para alinearlo con el centro horizontal de la vista, manteniendo su latitud.",
+    marsCanvas: "Globo de Marte con puntos interactivos. Pasá el mouse sobre un punto para pausar la rotación y mostrar su borde rojo. Hacé clic en un punto para abrir su ventana. Hacé clic y arrastrá horizontalmente, o arrastrá con un dedo, para rotarlo sobre su eje. Usá la rueda del mouse o el gesto de pellizcar con dos dedos para acercar o alejar. Elegí un punto de la lista para abrir su ventana y centrarlo horizontalmente, manteniendo su latitud.",
     mainTitle: "NASA: 50 años de aterrizajes en Marte",
     aboutTitle: "Acerca de",
     creditsTitle: "Créditos",
@@ -68,6 +72,10 @@ function renderLocale(locale, $localeToggle) {
   $("[data-i18n]").each(function () {
     const key = $(this).data("i18n");
     if (text[key] !== undefined) $(this).text(text[key]);
+  });
+  $("[data-i18n-aria-label]").each(function () {
+    const key = $(this).data("i18n-aria-label");
+    if (text[key] !== undefined) $(this).attr("aria-label", text[key]);
   });
 }
 

@@ -3,7 +3,7 @@ const MAX_ZOOM = 10_000;
 const ROTATION_PER_PIXEL = 0.008;
 const CLICK_DRAG_THRESHOLD = 8;
 
-export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, pointButtons, updateFraming }) {
+export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, pointButtons, updateFraming, onMarkerActivate = () => {} }) {
   const pointerStarts = new Map();
   const activeTouches = new Map();
   let previousPinchDistance = null;
@@ -13,6 +13,24 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
   let hoveredListIndex = -1;
   let selectedListIndexValue = -1;
   let lastInputMode = "pointer";
+  let lockedMarkerIndex = -1;
+
+  function activateMarker(index) {
+    if (index < 0 || lockedMarkerIndex >= 0) return;
+    lockedMarkerIndex = index;
+    hoveredListIndex = -1;
+    selectedListIndexValue = index;
+    lastInputMode = "keyboard";
+    targetRotation = markerField.targetRotationForMarker(index, mars.rotation.y);
+    markerField.setHoveredMarker(index);
+    onMarkerActivate(index);
+  }
+
+  function unlockPoint() {
+    if (lockedMarkerIndex < 0) return;
+    lockedMarkerIndex = -1;
+    clearListSelection();
+  }
 
   function zoomTo(zoom) {
     camera.zoom = THREE.MathUtils.clamp(zoom, MIN_ZOOM, MAX_ZOOM);
@@ -40,7 +58,7 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
   }
 
   function onPointPointerEnter(event) {
-    if (event.pointerType === "touch") return;
+    if (event.pointerType === "touch" || lockedMarkerIndex >= 0) return;
     lastInputMode = "pointer";
     selectedListIndexValue = -1;
     hoveredListIndex = Number(event.currentTarget.dataset.markerIndex);
@@ -54,12 +72,13 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
   }
 
   function onPointFocus(event) {
-    if (lastInputMode !== "keyboard") return;
+    if (lastInputMode !== "keyboard" || lockedMarkerIndex >= 0) return;
     selectedListIndexValue = Number(event.currentTarget.dataset.markerIndex);
     syncListSelection();
   }
 
   function onPointBlur(event) {
+    if (lockedMarkerIndex >= 0) return;
     const index = Number(event.currentTarget.dataset.markerIndex);
     if (selectedListIndexValue === index) {
       selectedListIndexValue = -1;
@@ -68,8 +87,7 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
   }
 
   function onPointClick(event) {
-    selectedListIndexValue = Number(event.currentTarget.dataset.markerIndex);
-    syncListSelection();
+    activateMarker(Number(event.currentTarget.dataset.markerIndex));
   }
 
   function onKeyDown(event) {
@@ -85,6 +103,7 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
   }
 
   function onPointerDown(event) {
+    if (lockedMarkerIndex >= 0) return;
     if (event.pointerType === "mouse") {
       if (event.button !== 0) return;
       clearListSelection();
@@ -108,6 +127,7 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
   }
 
   function onPointerMove(event) {
+    if (lockedMarkerIndex >= 0) return;
     const start = pointerStarts.get(event.pointerId);
     if (start && Math.hypot(event.clientX - start.x, event.clientY - start.y) > CLICK_DRAG_THRESHOLD) {
       start.moved = true;
@@ -161,8 +181,9 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
       previousPinchDistance = pinchDistance();
     }
 
-    if (start && !start.moved && markerField.markerAtPointer(event) >= 0) {
-      window.location.assign("https://www.google.com/");
+    const markerIndex = start && !start.moved ? markerField.markerAtPointer(event) : -1;
+    if (markerIndex >= 0) {
+      activateMarker(markerIndex);
     }
   }
 
@@ -182,6 +203,7 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
   }
 
   function onWheel(event) {
+    if (lockedMarkerIndex >= 0) return;
     event.preventDefault();
     zoomTo(camera.zoom * Math.exp(-event.deltaY * 0.001));
   }
@@ -216,8 +238,12 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
 
   return {
     update,
+    unlockPoint,
     get isDragging() {
       return isDragging;
+    },
+    get isPointLocked() {
+      return lockedMarkerIndex >= 0;
     }
   };
 }

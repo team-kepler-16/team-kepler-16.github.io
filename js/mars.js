@@ -15,6 +15,24 @@ const mars = await createMars(THREE);
 scene.add(mars);
 
 const pointButtons = [...document.querySelectorAll(".point-button[data-marker-index]")];
+const pointWindow = document.querySelector("#point-window");
+const pointWindowNumber = document.querySelector("#point-window-number");
+const pointWindowClose = document.querySelector("#point-window-close");
+let controls;
+
+function openPointWindow(index) {
+  pointWindowNumber.textContent = String(index + 1);
+  pointWindow.hidden = false;
+  pointWindow.setAttribute("aria-hidden", "false");
+  pointWindowClose.focus({ preventScroll: true });
+}
+
+function closePointWindow() {
+  pointWindow.hidden = true;
+  pointWindow.setAttribute("aria-hidden", "true");
+  controls.unlockPoint();
+}
+
 const markerField = createMarkerField({
   THREE,
   mars,
@@ -28,20 +46,29 @@ const markerField = createMarkerField({
     });
   }
 });
-const controls = attachGlobeControls({
+controls = attachGlobeControls({
   THREE,
   canvas,
   camera,
   mars,
   markerField,
   pointButtons,
+  onMarkerActivate: openPointWindow,
   updateFraming: () => updateCameraFraming(THREE, camera, canvas, header)
+});
+
+pointWindowClose.addEventListener("click", closePointWindow);
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !pointWindow.hidden) closePointWindow();
 });
 
 const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
 const clock = new THREE.Clock();
 
 function resize() {
+  const headerBottom = header?.getBoundingClientRect().bottom ?? 0;
+  document.documentElement.style.setProperty("--point-window-top", `${Math.ceil(headerBottom + 12)}px`);
+
   const width = canvas.clientWidth;
   const height = canvas.clientHeight;
   if (!width || !height) return;
@@ -58,7 +85,7 @@ function animate() {
   const motionAllowed = !motionPreference.matches;
   controls.update(delta, motionAllowed);
 
-  if (motionAllowed && !controls.isDragging && markerField.hoveredMarkerIndex < 0) {
+  if (motionAllowed && !controls.isPointLocked && !controls.isDragging && markerField.hoveredMarkerIndex < 0) {
     mars.rotation.y += delta * 0.08;
   }
 
