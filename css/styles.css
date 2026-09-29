@@ -263,6 +263,10 @@ body {
   backdrop-filter: blur(8px) saturate(82%);
 }
 
+.point-window:not([hidden])::before {
+  animation: point-window-backdrop-in 260ms ease-out both;
+}
+
 .point-window-card {
   position: relative;
   z-index: 1;
@@ -277,6 +281,27 @@ body {
   box-shadow: 0 20px 64px rgba(0, 0, 0, 0.4), inset 0 1px rgba(255, 255, 255, 0.055), 0 0 48px rgba(131, 221, 240, 0.06);
   -webkit-backdrop-filter: blur(14px) saturate(120%);
   backdrop-filter: blur(14px) saturate(120%);
+}
+
+.point-window:not([hidden]) .point-window-card {
+  animation: point-window-split-in 420ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  transform-origin: center;
+}
+
+@keyframes point-window-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes point-window-split-in {
+  from {
+    clip-path: inset(0 50% round 20px);
+    opacity: 0.45;
+  }
+  to {
+    clip-path: inset(0 0 round 20px);
+    opacity: 1;
+  }
 }
 
 .point-window[hidden] {
@@ -823,5 +848,10 @@ body {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .point-window:not([hidden])::before,
+  .point-window:not([hidden]) .point-window-card {
+    animation-duration: 0.01ms !important;
   }
 }
