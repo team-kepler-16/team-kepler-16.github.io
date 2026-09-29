@@ -4,6 +4,8 @@ const canvas = document.querySelector("#mars-canvas");
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
 camera.position.z = 3.25;
+camera.zoom = 0.9;
+camera.updateProjectionMatrix();
 
 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
@@ -24,46 +26,30 @@ const mars = new THREE.Mesh(
 );
 scene.add(mars);
 
-const minCameraDistance = 1.35;
-const maxCameraDistance = 8;
+const minCameraZoom = 0.1;
+const maxCameraZoom = 10000;
 const dragRotationSpeed = 0.008;
-
-function getMinCameraDistance() {
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
-  const headerHeight = document.querySelector(".site-header")?.getBoundingClientRect().height ?? 0;
-  if (!width || !height) return minCameraDistance;
-
-  const edgeInset = 24;
-  const availableWidth = Math.max(1, width - edgeInset * 2);
-  const availableHeight = Math.max(1, height - headerHeight - edgeInset * 2);
-  const visibleFraction = Math.min(availableWidth, availableHeight) / height;
-  const halfFovTangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-
-  return Math.max(
-    minCameraDistance,
-    Math.sqrt(1 + 1 / (visibleFraction * visibleFraction * halfFovTangent * halfFovTangent))
-  );
-}
 
 function updateCameraFraming() {
   const height = canvas.clientHeight;
   const headerHeight = document.querySelector(".site-header")?.getBoundingClientRect().height ?? 0;
-  const targetY = height ? camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * headerHeight / height : 0;
+  const targetY = height
+    ? camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * headerHeight / (height * camera.zoom)
+    : 0;
 
   camera.position.set(0, targetY, camera.position.z);
   camera.lookAt(0, targetY, 0);
 }
 
-function zoomTo(distance) {
-  const minDistance = getMinCameraDistance();
-  camera.position.z = THREE.MathUtils.clamp(distance, minDistance, Math.max(minDistance, maxCameraDistance));
+function zoomTo(zoom) {
+  camera.zoom = THREE.MathUtils.clamp(zoom, minCameraZoom, maxCameraZoom);
+  camera.updateProjectionMatrix();
   updateCameraFraming();
 }
 
 canvas.addEventListener("wheel", (event) => {
   event.preventDefault();
-  zoomTo(camera.position.z * Math.exp(event.deltaY * 0.001));
+  zoomTo(camera.zoom * Math.exp(-event.deltaY * 0.001));
 }, { passive: false });
 
 const activeTouches = new Map();
@@ -103,11 +89,19 @@ canvas.addEventListener("pointermove", (event) => {
 
   if (!activeTouches.has(event.pointerId)) return;
 
+  const previousTouch = activeTouches.get(event.pointerId);
   activeTouches.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+  if (activeTouches.size === 1) {
+    mars.rotation.y += (event.clientX - previousTouch.x) * dragRotationSpeed;
+    previousPinchDistance = null;
+    return;
+  }
+
   const pinchDistance = getPinchDistance();
 
   if (pinchDistance !== null && previousPinchDistance !== null) {
-    zoomTo(camera.position.z * previousPinchDistance / pinchDistance);
+    zoomTo(camera.zoom * previousPinchDistance / pinchDistance);
   }
 
   previousPinchDistance = pinchDistance;
@@ -135,7 +129,7 @@ function resize() {
   renderer.setSize(width, height, false);
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
-  zoomTo(camera.position.z);
+  updateCameraFraming();
 }
 
 const resizeObserver = new ResizeObserver(resize);
