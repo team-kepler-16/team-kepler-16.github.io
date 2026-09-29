@@ -5,7 +5,7 @@
 - **JavaScript preference:** Use jQuery for DOM work when convenient; use native JavaScript when clearer.
 - **Responsive requirement:** The site must display and remain usable on both desktop and mobile devices.
 - **Mars visualization:** Show a slowly auto-rotating 3D Mars sphere with cartoon shading, starting slightly zoomed out, on a full-viewport canvas behind the floating navbar. Frame the globe in the available area below the navbar; zoom may extend beyond the screen edges. Users can rotate it by clicking and dragging horizontally with the mouse or dragging with one finger, around its vertical axis, and zoom with the mouse wheel or a two-finger pinch. It uses Three.js and the NASA/JPL/Caltech texture from [NASA's Mars 3D resources](https://science.nasa.gov/3d-resources/mars/), stored in `assets/mars-texture.webp`.
-- **Homepage title:** “NASA: 50 Years of Landings on Mars,” translated for the Spanish locale and aligned left of the navbar on desktop.
+- **Homepage title:** “NASA: 50 Years of Landings on Mars,” translated for the Spanish locale and aligned left of the navbar on desktop. On small screens, center it on one line above the centered navigation controls.
 - **Credits:** Keep the Mars texture attribution and source link on `about.html`.
 - **Design and navigation:** Use a black background and only the requested right-aligned navbar: sound mute/unmute, English/Spanish locale, and About. Do not add unrequested elements.
 - **Documentation language:** English.
