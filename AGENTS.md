@@ -5,6 +5,7 @@ This project develops a Mars-only solution for the [NASA Space Apps Challenge 20
 ## Guidance
 
 - The current stack is HTML5, CSS3, JavaScript, and jQuery. Other technologies may be added as the project evolves.
+- Use jQuery for DOM work when it makes the code more convenient; use native JavaScript when it is clearer.
 - Design and implement the site to display and remain usable on both desktop and mobile devices.
 - Keep the design minimal and add only elements the user explicitly requests.
 - Write all project documentation in English.
