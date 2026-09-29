@@ -6,7 +6,6 @@ const canvas = document.querySelector("#mars-canvas");
 if (!canvas) throw new Error("The Mars canvas could not be found.");
 
 const header = document.querySelector(".site-header");
-const pointsPanel = document.querySelector(".points-panel");
 const scene = new THREE.Scene();
 const camera = createCamera(THREE);
 const renderer = createRenderer(THREE, canvas);
@@ -55,7 +54,7 @@ controls = attachGlobeControls({
   markerField,
   pointButtons,
   onMarkerActivate: openPointWindow,
-  updateFraming: () => updateCameraFraming(THREE, camera, canvas, header, pointsPanel)
+  updateFraming: () => updateCameraFraming(THREE, camera, canvas, header)
 });
 
 pointWindowClose.addEventListener("click", closePointWindow);
@@ -77,7 +76,7 @@ function resize() {
   renderer.setSize(width, height, false);
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
-  updateCameraFraming(THREE, camera, canvas, header, pointsPanel);
+  updateCameraFraming(THREE, camera, canvas, header);
 }
 
 function animate() {
@@ -133,37 +132,14 @@ async function createMars(THREE) {
   );
 }
 
-function updateCameraFraming(THREE, camera, canvas, header, pointsPanel) {
-  const bounds = canvas.getBoundingClientRect();
+function updateCameraFraming(THREE, camera, canvas, header) {
   const height = canvas.clientHeight;
   const headerHeight = header?.getBoundingClientRect().height ?? 0;
-  let targetX = 0;
-
-  if (window.innerWidth > 760 && pointsPanel && bounds.width) {
-    const panelLeft = pointsPanel.getBoundingClientRect().left - bounds.left;
-    const gap = THREE.MathUtils.clamp(bounds.width * 0.03, 24, 40);
-    const availableWidth = Math.max(0, panelLeft - gap);
-    const projectedRadius = bounds.height / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)))
-      * camera.zoom / Math.sqrt(camera.position.z ** 2 - 1);
-    const centeredInAvailableSpace = availableWidth / 2;
-    const clearOfPanel = panelLeft - gap - projectedRadius;
-    const globeCenterX = THREE.MathUtils.clamp(
-      Math.min(centeredInAvailableSpace, clearOfPanel),
-      0,
-      bounds.width / 2
-    );
-    const screenShift = bounds.width / 2 - globeCenterX;
-    const viewWidth = 2 * camera.position.z
-      * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))
-      * camera.aspect / camera.zoom;
-    targetX = screenShift * viewWidth / bounds.width;
-  }
-
   const targetY = height
     ? camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))
       * headerHeight / (height * camera.zoom)
     : 0;
 
-  camera.position.set(targetX, targetY, camera.position.z);
-  camera.lookAt(targetX, targetY, 0);
+  camera.position.set(0, targetY, camera.position.z);
+  camera.lookAt(0, targetY, 0);
 }
