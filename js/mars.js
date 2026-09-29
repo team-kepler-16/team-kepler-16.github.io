@@ -26,6 +26,86 @@ const mars = new THREE.Mesh(
 );
 scene.add(mars);
 
+const markerTargets = [];
+const markerGeometry = new THREE.SphereGeometry(0.015, 10, 10);
+const markerMaterial = new THREE.MeshBasicMaterial({ color: 0x7dd3fc });
+const markerTargetGeometry = new THREE.SphereGeometry(0.055, 8, 8);
+const markerTargetMaterial = new THREE.MeshBasicMaterial({
+  transparent: true,
+  opacity: 0,
+  colorWrite: false,
+  depthWrite: false
+});
+
+for (let index = 0; index < 18; index += 1) {
+  const vertical = Math.random() * 2 - 1;
+  const angle = Math.random() * Math.PI * 2;
+  const horizontal = Math.sqrt(1 - vertical * vertical);
+  const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+
+  marker.position.set(
+    horizontal * Math.cos(angle),
+    vertical,
+    horizontal * Math.sin(angle)
+  ).multiplyScalar(1.015);
+  mars.add(marker);
+
+  const target = new THREE.Mesh(markerTargetGeometry, markerTargetMaterial);
+  target.position.copy(marker.position);
+  mars.add(target);
+  markerTargets.push(target);
+}
+
+const raycaster = new THREE.Raycaster();
+const pointerPosition = new THREE.Vector2();
+const pointerStarts = new Map();
+
+function markerAtPointer(event) {
+  const bounds = canvas.getBoundingClientRect();
+  pointerPosition.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+  pointerPosition.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
+  camera.updateMatrixWorld();
+  scene.updateMatrixWorld(true);
+  raycaster.setFromCamera(pointerPosition, camera);
+
+  const markerHit = raycaster.intersectObjects(markerTargets, false)[0];
+  if (!markerHit) return false;
+
+  const globeHit = raycaster.intersectObject(mars, false)[0];
+  return !globeHit || markerHit.distance < globeHit.distance;
+}
+
+canvas.addEventListener("pointerdown", (event) => {
+  if (event.pointerType === "mouse" && event.button !== 0) return;
+  pointerStarts.set(event.pointerId, { x: event.clientX, y: event.clientY, moved: false });
+});
+
+canvas.addEventListener("pointermove", (event) => {
+  const start = pointerStarts.get(event.pointerId);
+  if (start && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 8) {
+    start.moved = true;
+  }
+});
+
+canvas.addEventListener("pointerup", (event) => {
+  const start = pointerStarts.get(event.pointerId);
+  pointerStarts.delete(event.pointerId);
+
+  if (start && !start.moved && markerAtPointer(event)) {
+    window.location.assign("https://www.google.com/");
+  }
+});
+
+canvas.addEventListener("pointercancel", (event) => {
+  pointerStarts.delete(event.pointerId);
+});
+
+canvas.addEventListener("pointermove", (event) => {
+  if (event.pointerType === "mouse" && !isDragging) {
+    canvas.style.cursor = markerAtPointer(event) ? "pointer" : "grab";
+  }
+});
+
 const minCameraZoom = 0.1;
 const maxCameraZoom = 10000;
 const dragRotationSpeed = 0.008;
