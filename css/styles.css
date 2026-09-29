@@ -22,9 +22,20 @@ body {
 #mars-stage {
   display: grid;
   flex: 1;
+  grid-template-rows: auto minmax(0, 1fr);
   min-height: 0;
   place-items: center;
   overflow: hidden;
+}
+
+#mars-title {
+  margin: clamp(20px, 4svh, 36px) 24px 0;
+  font-family: "Helvetica Now Display", -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  text-align: center;
 }
 
 #mars-canvas {
