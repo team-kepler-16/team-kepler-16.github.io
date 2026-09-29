@@ -25,7 +25,7 @@
       </nav>
     </header>
     <main id="mars-stage">
-      <canvas id="mars-canvas" role="img" aria-label="Mars globe with random interactive points that open Google. Hover over a point to pause rotation and show its red outline. Click and drag horizontally, or drag with one finger, to rotate it around its axis. Use the mouse wheel or a two-finger pinch to zoom.">
+      <canvas id="mars-canvas" role="img" aria-label="Mars globe with random interactive points that open Google. Hover over a point to pause rotation and show its red outline. Click and drag horizontally, or drag with one finger, to rotate it around its axis. Use the mouse wheel or a two-finger pinch to zoom. Select a point from the list to rotate it to the horizontal centerline while keeping its latitude.">
         A slowly rotating 3D view of Mars with interactive points.
       </canvas>
       <aside class="points-panel" aria-labelledby="points-title">
@@ -34,24 +34,24 @@
           <span class="points-count" aria-hidden="true">18</span>
         </div>
         <ol class="points-list">
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 1</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 2</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 3</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 4</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 5</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 6</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 7</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 8</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 9</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 10</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 11</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 12</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 13</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 14</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 15</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 16</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 17</span></li>
-          <li><span class="point-name"><span data-i18n="pointPrefix">Point</span> 18</span></li>
+          <li><button class="point-button" type="button" data-marker-index="0" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 1</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="1" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 2</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="2" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 3</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="3" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 4</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="4" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 5</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="5" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 6</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="6" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 7</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="7" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 8</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="8" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 9</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="9" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 10</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="10" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 11</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="11" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 12</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="12" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 13</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="13" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 14</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="14" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 15</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="15" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 16</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="16" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 17</span></button></li>
+          <li><button class="point-button" type="button" data-marker-index="17" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 18</span></button></li>
         </ol>
       </aside>
     </main>

@@ -9,6 +9,11 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
   let previousPinchDistance = null;
   let previousPointerX = null;
   let isDragging = false;
+  let targetRotation = null;
+  let hoveredListIndex = -1;
+  let selectedListIndexValue = -1;
+  let lastInputMode = "pointer";
+  const pointButtons = [...document.querySelectorAll(".point-button[data-marker-index]")];
 
   function zoomTo(zoom) {
     camera.zoom = THREE.MathUtils.clamp(zoom, MIN_ZOOM, MAX_ZOOM);
@@ -22,13 +27,73 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
     return Math.hypot(first.x - second.x, first.y - second.y);
   }
 
+  function selectedListIndex() {
+    if (lastInputMode === "keyboard" && selectedListIndexValue >= 0) return selectedListIndexValue;
+    return hoveredListIndex >= 0 ? hoveredListIndex : selectedListIndexValue;
+  }
+
+  function syncListSelection() {
+    const index = selectedListIndex();
+    targetRotation = index >= 0
+      ? markerField.targetRotationForMarker(index, mars.rotation.y)
+      : null;
+    markerField.setHoveredMarker(index);
+  }
+
+  function onPointPointerEnter(event) {
+    if (event.pointerType === "touch") return;
+    lastInputMode = "pointer";
+    selectedListIndexValue = -1;
+    hoveredListIndex = Number(event.currentTarget.dataset.markerIndex);
+    syncListSelection();
+  }
+
+  function onPointPointerLeave() {
+    hoveredListIndex = -1;
+    lastInputMode = "pointer";
+    syncListSelection();
+  }
+
+  function onPointFocus(event) {
+    if (lastInputMode !== "keyboard") return;
+    selectedListIndexValue = Number(event.currentTarget.dataset.markerIndex);
+    syncListSelection();
+  }
+
+  function onPointBlur(event) {
+    const index = Number(event.currentTarget.dataset.markerIndex);
+    if (selectedListIndexValue === index) {
+      selectedListIndexValue = -1;
+      syncListSelection();
+    }
+  }
+
+  function onPointClick(event) {
+    selectedListIndexValue = Number(event.currentTarget.dataset.markerIndex);
+    syncListSelection();
+  }
+
+  function onKeyDown(event) {
+    if (event.key === "Tab" || event.key.startsWith("Arrow")) lastInputMode = "keyboard";
+  }
+
+  function clearListSelection() {
+    hoveredListIndex = -1;
+    selectedListIndexValue = -1;
+    lastInputMode = "pointer";
+    targetRotation = null;
+    markerField.setHoveredMarker(-1);
+  }
+
   function onPointerDown(event) {
     if (event.pointerType === "mouse") {
       if (event.button !== 0) return;
+      clearListSelection();
       isDragging = true;
       previousPointerX = event.clientX;
       canvas.style.cursor = "grabbing";
     } else if (event.pointerType === "touch") {
+      clearListSelection();
       activeTouches.set(event.pointerId, { x: event.clientX, y: event.clientY });
       previousPinchDistance = pinchDistance();
     } else {
@@ -54,7 +119,13 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
         mars.rotation.y += (event.clientX - previousPointerX) * ROTATION_PER_PIXEL;
         previousPointerX = event.clientX;
       } else {
-        markerField.setHoveredMarker(markerField.markerAtPointer(event));
+        const markerIndex = markerField.markerAtPointer(event);
+        if (markerIndex >= 0) {
+          targetRotation = null;
+          markerField.setHoveredMarker(markerIndex);
+        } else {
+          markerField.setHoveredMarker(selectedListIndex());
+        }
       }
       return;
     }
@@ -84,7 +155,8 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
     if (event.pointerType === "mouse") {
       isDragging = false;
       previousPointerX = null;
-      markerField.setHoveredMarker(markerField.markerAtPointer(event));
+      const markerIndex = markerField.markerAtPointer(event);
+      markerField.setHoveredMarker(markerIndex >= 0 ? markerIndex : selectedListIndex());
     } else if (event.pointerType === "touch") {
       activeTouches.delete(event.pointerId);
       previousPinchDistance = pinchDistance();
@@ -102,17 +174,30 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
     if (event.pointerType === "mouse") {
       isDragging = false;
       previousPointerX = null;
-      markerField.setHoveredMarker(-1);
+      markerField.setHoveredMarker(selectedListIndex());
     }
   }
 
   function onPointerLeave(event) {
-    if (event.pointerType === "mouse" && !isDragging) markerField.setHoveredMarker(-1);
+    if (event.pointerType === "mouse" && !isDragging) markerField.setHoveredMarker(selectedListIndex());
   }
 
   function onWheel(event) {
     event.preventDefault();
     zoomTo(camera.zoom * Math.exp(-event.deltaY * 0.001));
+  }
+
+  function update(delta, motionAllowed) {
+    if (targetRotation !== null) {
+      const difference = targetRotation - mars.rotation.y;
+
+      if (!motionAllowed || Math.abs(difference) < 0.001) {
+        mars.rotation.y += difference;
+        targetRotation = null;
+      } else {
+        mars.rotation.y += difference * (1 - Math.exp(-10 * delta));
+      }
+    }
   }
 
   canvas.addEventListener("pointerdown", onPointerDown);
@@ -121,8 +206,17 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
   canvas.addEventListener("pointercancel", onPointerCancel);
   canvas.addEventListener("pointerleave", onPointerLeave);
   canvas.addEventListener("wheel", onWheel, { passive: false });
+  document.addEventListener("keydown", onKeyDown, true);
+  pointButtons.forEach((button) => {
+    button.addEventListener("pointerenter", onPointPointerEnter);
+    button.addEventListener("pointerleave", onPointPointerLeave);
+    button.addEventListener("focus", onPointFocus);
+    button.addEventListener("blur", onPointBlur);
+    button.addEventListener("click", onPointClick);
+  });
 
   return {
+    update,
     get isDragging() {
       return isDragging;
     }

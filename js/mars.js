@@ -14,7 +14,20 @@ addLighting(THREE, scene);
 const mars = await createMars(THREE);
 scene.add(mars);
 
-const markerField = createMarkerField({ THREE, mars, scene, camera, canvas });
+const pointButtons = [...document.querySelectorAll(".point-button[data-marker-index]")];
+const markerField = createMarkerField({
+  THREE,
+  mars,
+  scene,
+  camera,
+  canvas,
+  onHoveredMarkerChange(index) {
+    pointButtons.forEach((button) => {
+      const isHovered = Number(button.dataset.markerIndex) === index;
+      button.setAttribute("aria-pressed", String(isHovered));
+    });
+  }
+});
 const controls = attachGlobeControls({
   THREE,
   canvas,
@@ -42,6 +55,7 @@ function animate() {
   requestAnimationFrame(animate);
   const delta = Math.min(clock.getDelta(), 0.05);
   const motionAllowed = !motionPreference.matches;
+  controls.update(delta, motionAllowed);
 
   if (motionAllowed && !controls.isDragging && markerField.hoveredMarkerIndex < 0) {
     mars.rotation.y += delta * 0.08;

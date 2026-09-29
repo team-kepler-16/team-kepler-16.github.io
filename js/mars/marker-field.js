@@ -8,12 +8,13 @@ const CIRCLE_SEGMENTS = 40;
 const CYAN = 0x7dd3fc;
 const HOVER_RED = 0xff334f;
 
-export function createMarkerField({ THREE, mars, scene, camera, canvas }) {
+export function createMarkerField({ THREE, mars, scene, camera, canvas, onHoveredMarkerChange = () => {} }) {
   const targets = [];
   const outlines = [];
   const discs = [];
   const halos = [];
   const pulses = [];
+  const markerNormals = [];
   let hoveredMarkerIndex = -1;
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
@@ -37,6 +38,7 @@ export function createMarkerField({ THREE, mars, scene, camera, canvas }) {
 
   for (let index = 0; index < MARKER_COUNT; index += 1) {
     const normal = randomUnitVector(THREE);
+    markerNormals.push(normal);
     const position = normal.clone().multiplyScalar(MARKER_POSITION_RADIUS);
 
     const halo = createSurfaceDisc(THREE, mars, normal, 0.055, haloMaterial.clone());
@@ -110,7 +112,18 @@ export function createMarkerField({ THREE, mars, scene, camera, canvas }) {
       halos[hoveredMarkerIndex].material.opacity = 0.96;
     }
 
+    onHoveredMarkerChange(hoveredMarkerIndex);
     canvas.style.cursor = hoveredMarkerIndex >= 0 ? "pointer" : "grab";
+  }
+
+  function targetRotationForMarker(index, currentRotation) {
+    const normal = markerNormals[index];
+    if (!normal) return currentRotation;
+
+    const facingRotation = -Math.atan2(normal.x, normal.z);
+    const fullTurn = Math.PI * 2;
+    const reverseDistance = ((currentRotation - facingRotation) % fullTurn + fullTurn) % fullTurn;
+    return currentRotation - reverseDistance;
   }
 
   function updatePulses(elapsedTime, motionAllowed) {
@@ -130,6 +143,7 @@ export function createMarkerField({ THREE, mars, scene, camera, canvas }) {
     markerAtPointer,
     setHoveredMarker,
     updatePulses,
+    targetRotationForMarker,
     get hoveredMarkerIndex() {
       return hoveredMarkerIndex;
     }
