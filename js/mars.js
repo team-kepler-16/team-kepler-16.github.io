@@ -16,11 +16,14 @@ scene.add(mars);
 
 const pointButtons = [...document.querySelectorAll(".point-button[data-marker-index]")];
 const pointWindow = document.querySelector("#point-window");
+const pointWindowCard = pointWindow.querySelector(".point-window-card");
 const pointWindowNumber = document.querySelector("#point-window-number");
 const pointWindowClose = document.querySelector("#point-window-close");
 let controls;
 
 function openPointWindow(index) {
+  pointWindow.classList.remove("is-closing");
+  pointWindowClose.disabled = false;
   pointWindowNumber.textContent = String(index + 1);
   pointWindow.hidden = false;
   pointWindow.setAttribute("aria-hidden", "false");
@@ -28,8 +31,17 @@ function openPointWindow(index) {
 }
 
 function closePointWindow() {
+  if (pointWindow.hidden || pointWindow.classList.contains("is-closing")) return;
+  pointWindow.classList.add("is-closing");
+  pointWindowClose.disabled = true;
+}
+
+function finishClosingPointWindow(event) {
+  if (event.target !== pointWindowCard || event.animationName !== "point-window-split-out") return;
   pointWindow.hidden = true;
+  pointWindow.classList.remove("is-closing");
   pointWindow.setAttribute("aria-hidden", "true");
+  pointWindowClose.disabled = false;
   controls.unlockPoint();
 }
 
@@ -58,6 +70,7 @@ controls = attachGlobeControls({
 });
 
 pointWindowClose.addEventListener("click", closePointWindow);
+pointWindow.addEventListener("animationend", finishClosingPointWindow);
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !pointWindow.hidden) closePointWindow();
 });
