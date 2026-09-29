@@ -3,8 +3,11 @@
 }
 
 body {
+  display: flex;
+  flex-direction: column;
   min-width: 320px;
   min-height: 100vh;
+  min-height: 100svh;
   margin: 0;
   background: #000;
   color: #fff;
@@ -14,6 +17,49 @@ body {
 .site-header {
   width: 100%;
   padding: 20px 24px;
+}
+
+#mars-stage {
+  display: grid;
+  flex: 1;
+  min-height: 0;
+  place-items: center;
+  overflow: hidden;
+}
+
+#mars-canvas {
+  display: block;
+  width: min(88vw, 78svh, 720px);
+  aspect-ratio: 1;
+}
+
+.about-content {
+  width: min(calc(100% - 48px), 560px);
+  margin: auto;
+  padding-block: 48px;
+}
+
+.about-content h1 {
+  margin: 0 0 40px;
+  font-size: clamp(32px, 6vw, 48px);
+  font-weight: 400;
+}
+
+.about-content h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.about-content p {
+  margin: 0;
+  color: #bbb;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.about-content a {
+  color: #fff;
 }
 
 .site-nav {
@@ -36,6 +82,10 @@ body {
 
 .site-nav button {
   cursor: pointer;
+}
+
+.home-link {
+  margin-right: auto;
 }
 
 .site-nav button:hover,

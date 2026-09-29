@@ -3,24 +3,27 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Abandoned but Not Forgotten: Mars</title>
+    <title>About — Abandoned but Not Forgotten: Mars</title>
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous" defer></script>
     <script src="js/script.js" defer></script>
-    <script type="module" src="js/mars.js"></script>
   </head>
   <body>
     <header class="site-header">
       <nav class="site-nav" aria-label="Main navigation">
+        <a class="home-link" href="index.html" data-i18n="home">Home</a>
         <button id="sound-toggle" type="button" aria-pressed="false">Mute</button>
         <button id="locale-toggle" type="button" aria-label="Language: English. Switch to Spanish">EN</button>
         <a href="about.html" data-i18n="about">About</a>
       </nav>
     </header>
-    <main id="mars-stage">
-      <canvas id="mars-canvas" role="img" aria-label="A slowly rotating 3D view of Mars">
-        A slowly rotating 3D view of Mars.
-      </canvas>
+    <main class="about-content">
+      <h1 id="about-title" data-i18n="aboutTitle">About</h1>
+      <h2 data-i18n="creditsTitle">Credits</h2>
+      <p>
+        <span data-i18n="textureCredit">Mars texture: NASA/JPL and Caltech.</span>
+        <a href="https://science.nasa.gov/3d-resources/mars/" data-i18n="textureSource">NASA Mars 3D resources</a>
+      </p>
     </main>
   </body>
 </html>
