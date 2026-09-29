@@ -116,8 +116,9 @@ body {
 .points-panel {
   position: absolute;
   z-index: 3;
-  top: var(--point-window-top, 112px);
+  top: auto;
   right: clamp(20px, 3.5vw, 52px);
+  bottom: 16px;
   display: flex;
   width: min(216px, calc(100% - 40px));
   max-height: calc(100svh - var(--point-window-top, 112px) - 24px);
