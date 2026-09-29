@@ -34,6 +34,7 @@ const controls = attachGlobeControls({
   camera,
   mars,
   markerField,
+  pointButtons,
   updateFraming: () => updateCameraFraming(THREE, camera, canvas, header)
 });
 

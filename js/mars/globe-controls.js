@@ -3,7 +3,7 @@ const MAX_ZOOM = 10_000;
 const ROTATION_PER_PIXEL = 0.008;
 const CLICK_DRAG_THRESHOLD = 8;
 
-export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, updateFraming }) {
+export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, pointButtons, updateFraming }) {
   const pointerStarts = new Map();
   const activeTouches = new Map();
   let previousPinchDistance = null;
@@ -13,7 +13,6 @@ export function attachGlobeControls({ THREE, canvas, camera, mars, markerField, 
   let hoveredListIndex = -1;
   let selectedListIndexValue = -1;
   let lastInputMode = "pointer";
-  const pointButtons = [...document.querySelectorAll(".point-button[data-marker-index]")];
 
   function zoomTo(zoom) {
     camera.zoom = THREE.MathUtils.clamp(zoom, MIN_ZOOM, MAX_ZOOM);

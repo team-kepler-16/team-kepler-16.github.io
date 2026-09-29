@@ -9,12 +9,8 @@ const CYAN = 0x7dd3fc;
 const HOVER_RED = 0xff334f;
 
 export function createMarkerField({ THREE, mars, scene, camera, canvas, onHoveredMarkerChange = () => {} }) {
-  const targets = [];
-  const outlines = [];
-  const discs = [];
-  const halos = [];
+  const markers = [];
   const pulses = [];
-  const markerNormals = [];
   let hoveredMarkerIndex = -1;
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
@@ -38,22 +34,18 @@ export function createMarkerField({ THREE, mars, scene, camera, canvas, onHovere
 
   for (let index = 0; index < MARKER_COUNT; index += 1) {
     const normal = randomUnitVector(THREE);
-    markerNormals.push(normal);
     const position = normal.clone().multiplyScalar(MARKER_POSITION_RADIUS);
 
     const halo = createSurfaceDisc(THREE, mars, normal, 0.055, haloMaterial.clone());
     halo.renderOrder = 1;
-    halos.push(halo);
 
     const disc = createSurfaceDisc(THREE, mars, normal, 0.025, discMaterial.clone());
     disc.renderOrder = 2;
-    discs.push(disc);
 
     const target = new THREE.Mesh(targetGeometry, targetMaterial);
     target.position.copy(position);
     target.userData.markerIndex = index;
     mars.add(target);
-    targets.push(target);
 
     const outline = createSurfaceRing(THREE, mars, normal, 0, {
       color: HOVER_RED,
@@ -62,13 +54,15 @@ export function createMarkerField({ THREE, mars, scene, camera, canvas, onHovere
     outline.material.opacity = 0;
     outline.mesh.renderOrder = 4;
     updateRingGeometry(outline, 0.034, 0.76);
-    outlines.push(outline);
+    markers.push({ normal, halo, disc, target, outline });
 
     const phase = Math.random() * PULSE_DURATION;
     for (let wave = 0; wave < 2; wave += 1) {
       pulses.push(createSurfaceRing(THREE, mars, normal, (phase + wave * PULSE_PAIR_OFFSET) % PULSE_DURATION));
     }
   }
+
+  const targets = markers.map(({ target }) => target);
 
   function markerAtPointer(event) {
     const bounds = canvas.getBoundingClientRect();
@@ -96,20 +90,12 @@ export function createMarkerField({ THREE, mars, scene, camera, canvas, onHovere
     if (hoveredMarkerIndex === index) return;
 
     if (hoveredMarkerIndex >= 0) {
-      outlines[hoveredMarkerIndex].material.opacity = 0;
-      discs[hoveredMarkerIndex].material.color.setHex(CYAN);
-      discs[hoveredMarkerIndex].material.opacity = 0.92;
-      halos[hoveredMarkerIndex].material.color.setHex(0xffffff);
-      halos[hoveredMarkerIndex].material.opacity = 0.82;
+      setMarkerAppearance(markers[hoveredMarkerIndex], false);
     }
 
     hoveredMarkerIndex = index;
     if (hoveredMarkerIndex >= 0) {
-      outlines[hoveredMarkerIndex].material.opacity = 1;
-      discs[hoveredMarkerIndex].material.color.setHex(0xffa0aa);
-      discs[hoveredMarkerIndex].material.opacity = 1;
-      halos[hoveredMarkerIndex].material.color.setHex(HOVER_RED);
-      halos[hoveredMarkerIndex].material.opacity = 0.96;
+      setMarkerAppearance(markers[hoveredMarkerIndex], true);
     }
 
     onHoveredMarkerChange(hoveredMarkerIndex);
@@ -117,10 +103,10 @@ export function createMarkerField({ THREE, mars, scene, camera, canvas, onHovere
   }
 
   function targetRotationForMarker(index, currentRotation) {
-    const normal = markerNormals[index];
-    if (!normal) return currentRotation;
+    const marker = markers[index];
+    if (!marker) return currentRotation;
 
-    const facingRotation = -Math.atan2(normal.x, normal.z);
+    const facingRotation = -Math.atan2(marker.normal.x, marker.normal.z);
     const fullTurn = Math.PI * 2;
     const reverseDistance = ((currentRotation - facingRotation) % fullTurn + fullTurn) % fullTurn;
     return currentRotation - reverseDistance;
@@ -148,6 +134,14 @@ export function createMarkerField({ THREE, mars, scene, camera, canvas, onHovere
       return hoveredMarkerIndex;
     }
   };
+}
+
+function setMarkerAppearance({ outline, disc, halo }, highlighted) {
+  outline.material.opacity = highlighted ? 1 : 0;
+  disc.material.color.setHex(highlighted ? 0xffa0aa : CYAN);
+  disc.material.opacity = highlighted ? 1 : 0.92;
+  halo.material.color.setHex(highlighted ? HOVER_RED : 0xffffff);
+  halo.material.opacity = highlighted ? 0.96 : 0.82;
 }
 
 function randomUnitVector(THREE) {

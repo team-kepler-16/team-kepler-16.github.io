@@ -93,9 +93,6 @@ body {
   inset: 0;
   content: "";
   pointer-events: none;
-}
-
-#mars-stage::after {
   background:
     radial-gradient(ellipse 70% 65% at 50% 48%, transparent 45%, rgba(5, 5, 7, 0.5) 100%),
     linear-gradient(115deg, rgba(9, 8, 11, 0.22), transparent 52%, rgba(7, 8, 11, 0.25));
