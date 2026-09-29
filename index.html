@@ -10,7 +10,8 @@
     <script type="module" src="js/mars.js"></script>
   </head>
   <body>
-    <header class="site-header">
+    <header class="site-header home-header">
+      <h1 id="mars-title" data-i18n="mainTitle">NASA: 50 Years of Landings on Mars</h1>
       <nav class="site-nav" aria-label="Main navigation">
         <button id="sound-toggle" type="button" aria-pressed="false">Mute</button>
         <button id="locale-toggle" type="button" aria-label="Language: English. Switch to Spanish">EN</button>
@@ -18,7 +19,6 @@
       </nav>
     </header>
     <main id="mars-stage">
-      <h1 id="mars-title" data-i18n="mainTitle">NASA: 50 Years of Landings on Mars</h1>
       <canvas id="mars-canvas" role="img" aria-label="A slowly rotating 3D view of Mars">
         A slowly rotating 3D view of Mars.
       </canvas>
