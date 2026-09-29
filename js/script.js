@@ -48,12 +48,14 @@ $(initializeSiteControls);
 function initializeSiteControls() {
   const $soundToggle = $("#sound-toggle");
   const $localeToggle = $("#locale-toggle");
+  const $siteNav = $(".site-nav");
   const $pointsPanel = $("#points-panel");
   const $pointsPanelToggle = $("#points-panel-toggle");
   const $pointsList = $("#points-list");
   let locale = "en";
   let isMuted = false;
   let arePointsMinimized = false;
+  let isLocaleTransitioning = false;
 
   $soundToggle.on("click", function () {
     isMuted = !isMuted;
@@ -62,15 +64,36 @@ function initializeSiteControls() {
   });
 
   $localeToggle.on("click", function () {
-    locale = locale === "en" ? "es" : "en";
-    $(document.documentElement).attr("lang", locale);
-    renderLocale(locale, $localeToggle);
-    renderSoundControl($soundToggle, locale, isMuted);
+    if (isLocaleTransitioning) return;
+
+    function updateLocale() {
+      locale = locale === "en" ? "es" : "en";
+      $(document.documentElement).attr("lang", locale);
+      renderLocale(locale, $localeToggle);
+      renderSoundControl($soundToggle, locale, isMuted);
+      renderPointsPanelToggle($pointsPanelToggle, locale, arePointsMinimized);
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      updateLocale();
+      return;
+    }
+
+    isLocaleTransitioning = true;
+    $siteNav.addClass("is-localizing");
+
+    window.setTimeout(function () {
+      updateLocale();
+      $siteNav.removeClass("is-localizing");
+      window.setTimeout(function () {
+        isLocaleTransitioning = false;
+      }, 180);
+    }, 160);
   });
 
   $pointsPanelToggle.on("click", function () {
     arePointsMinimized = !arePointsMinimized;
-    $pointsList.prop("hidden", arePointsMinimized);
+    $pointsList.attr("aria-hidden", String(arePointsMinimized)).prop("inert", arePointsMinimized);
     $pointsPanel.toggleClass("is-minimized", arePointsMinimized);
     renderPointsPanelToggle($pointsPanelToggle, locale, arePointsMinimized);
   });
