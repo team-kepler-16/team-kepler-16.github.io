@@ -116,11 +116,11 @@ body {
 .points-panel {
   position: absolute;
   z-index: 3;
-  top: 50%;
+  top: var(--point-window-top, 112px);
   right: clamp(20px, 3.5vw, 52px);
   display: flex;
   width: min(216px, calc(100% - 40px));
-  max-height: min(70svh, 600px);
+  max-height: calc(100svh - var(--point-window-top, 112px) - 24px);
   flex-direction: column;
   overflow: hidden;
   border: 1px solid var(--color-line);
@@ -130,7 +130,6 @@ body {
   -webkit-backdrop-filter: blur(20px) saturate(125%);
   backdrop-filter: blur(20px) saturate(125%);
   pointer-events: auto;
-  transform: translateY(-50%);
 }
 
 .points-panel-heading {
