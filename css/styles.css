@@ -142,6 +142,16 @@ body {
   border-bottom: 1px solid var(--color-line);
 }
 
+.points-panel.is-minimized {
+  max-height: none;
+}
+
+.points-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .points-panel-heading h2 {
   margin: 0;
   color: var(--color-text);
@@ -165,6 +175,42 @@ body {
   font-weight: 700;
 }
 
+.points-panel-toggle {
+  display: grid;
+  width: 27px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid var(--color-line);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.points-panel-toggle:hover,
+.points-panel-toggle:focus-visible {
+  border-color: rgba(131, 221, 240, 0.45);
+  background: rgba(131, 221, 240, 0.09);
+  color: var(--color-text);
+  outline: none;
+}
+
+.points-panel-toggle svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+  transition: transform 160ms ease;
+}
+
+.points-panel.is-minimized .points-panel-toggle svg {
+  transform: rotate(180deg);
+}
+
 .points-list {
   min-height: 0;
   margin: 0;
@@ -175,6 +221,10 @@ body {
   overflow-y: auto;
   scrollbar-color: rgba(214, 106, 74, 0.55) transparent;
   scrollbar-width: thin;
+}
+
+.points-list[hidden] {
+  display: none;
 }
 
 .points-list li {

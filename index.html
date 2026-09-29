@@ -52,12 +52,17 @@
       <canvas id="mars-canvas" role="img" aria-label="Mars globe with interactive points. Hover over a point to pause rotation and show its red outline. Click a point to open its window. Click and drag horizontally, or drag with one finger, to rotate it around its axis. Use the mouse wheel or a two-finger pinch to zoom. Select a point from the list to open its window and center it horizontally while keeping its latitude.">
         A slowly rotating 3D view of Mars with interactive points.
       </canvas>
-      <aside class="points-panel" aria-labelledby="points-title">
+      <aside id="points-panel" class="points-panel" aria-labelledby="points-title">
         <div class="points-panel-heading">
           <h2 id="points-title" data-i18n="pointsTitle">Points</h2>
-          <span class="points-count" aria-hidden="true">18</span>
+          <div class="points-panel-actions">
+            <span class="points-count" aria-hidden="true">18</span>
+            <button id="points-panel-toggle" class="points-panel-toggle" type="button" aria-expanded="true" aria-controls="points-list" data-i18n-aria-label="minimizePoints" aria-label="Minimize points list">
+              <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="m5 8 5 5 5-5" /></svg>
+            </button>
+          </div>
         </div>
-        <ol class="points-list">
+        <ol id="points-list" class="points-list">
           <li><button class="point-button" type="button" data-marker-index="0" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 1</span></button></li>
           <li><button class="point-button" type="button" data-marker-index="1" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 2</span></button></li>
           <li><button class="point-button" type="button" data-marker-index="2" aria-pressed="false"><span class="point-name"><span data-i18n="pointPrefix">Point</span> 3</span></button></li>

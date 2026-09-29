@@ -7,6 +7,8 @@ const translations = {
     archiveLabel: "Mars Exploration / Archive",
     aboutEyebrow: "Project / About the archive",
     pointsTitle: "Points",
+    minimizePoints: "Minimize points list",
+    expandPoints: "Expand points list",
     pointPrefix: "Point",
     closeWindow: "Close window",
     selectedPoint: "Selected surface point",
@@ -26,6 +28,8 @@ const translations = {
     archiveLabel: "Exploración de Marte / Archivo",
     aboutEyebrow: "Proyecto / El archivo",
     pointsTitle: "Puntos",
+    minimizePoints: "Minimizar lista de puntos",
+    expandPoints: "Expandir lista de puntos",
     pointPrefix: "Punto",
     closeWindow: "Cerrar ventana",
     selectedPoint: "Punto de superficie seleccionado",
@@ -44,8 +48,12 @@ $(initializeSiteControls);
 function initializeSiteControls() {
   const $soundToggle = $("#sound-toggle");
   const $localeToggle = $("#locale-toggle");
+  const $pointsPanel = $("#points-panel");
+  const $pointsPanelToggle = $("#points-panel-toggle");
+  const $pointsList = $("#points-list");
   let locale = "en";
   let isMuted = false;
+  let arePointsMinimized = false;
 
   $soundToggle.on("click", function () {
     isMuted = !isMuted;
@@ -60,8 +68,16 @@ function initializeSiteControls() {
     renderSoundControl($soundToggle, locale, isMuted);
   });
 
+  $pointsPanelToggle.on("click", function () {
+    arePointsMinimized = !arePointsMinimized;
+    $pointsList.prop("hidden", arePointsMinimized);
+    $pointsPanel.toggleClass("is-minimized", arePointsMinimized);
+    renderPointsPanelToggle($pointsPanelToggle, locale, arePointsMinimized);
+  });
+
   renderLocale(locale, $localeToggle);
   renderSoundControl($soundToggle, locale, isMuted);
+  renderPointsPanelToggle($pointsPanelToggle, locale, arePointsMinimized);
 }
 
 function renderLocale(locale, $localeToggle) {
@@ -87,5 +103,14 @@ function renderSoundControl($soundToggle, locale, isMuted) {
   $soundToggle.attr({
     "aria-label": label,
     "aria-pressed": String(isMuted)
+  });
+}
+
+function renderPointsPanelToggle($toggle, locale, isMinimized) {
+  const key = isMinimized ? "expandPoints" : "minimizePoints";
+  $toggle.attr({
+    "aria-expanded": String(!isMinimized),
+    "data-i18n-aria-label": key,
+    "aria-label": translations[locale][key]
   });
 }
