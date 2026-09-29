@@ -66,7 +66,10 @@ function initializeSiteControls() {
 
 function renderLocale(locale, $localeToggle) {
   const text = translations[locale];
-  $localeToggle.text(locale.toUpperCase()).attr("aria-label", text.language);
+  $localeToggle.attr({
+    "aria-label": text.language,
+    "data-switch-to": locale === "en" ? "es" : "en"
+  });
   $("#mars-canvas").attr("aria-label", text.marsCanvas);
 
   $("[data-i18n]").each(function () {
@@ -81,7 +84,7 @@ function renderLocale(locale, $localeToggle) {
 
 function renderSoundControl($soundToggle, locale, isMuted) {
   const label = isMuted ? translations[locale].unmute : translations[locale].mute;
-  $soundToggle.text(label).attr({
+  $soundToggle.attr({
     "aria-label": label,
     "aria-pressed": String(isMuted)
   });
