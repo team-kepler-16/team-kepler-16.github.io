@@ -15,7 +15,7 @@ const sunlight = new THREE.DirectionalLight(0xffe7d0, 2.2);
 sunlight.position.set(-4, 2, 5);
 scene.add(sunlight);
 
-const texture = await new THREE.TextureLoader().loadAsync("assets/mars-texture.webp");
+const texture = await new THREE.TextureLoader().loadAsync("assets/mars-texture-cartoon.png");
 texture.colorSpace = THREE.SRGBColorSpace;
 
 const mars = new THREE.Mesh(
