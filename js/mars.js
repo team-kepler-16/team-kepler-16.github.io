@@ -24,6 +24,109 @@ const mars = new THREE.Mesh(
 );
 scene.add(mars);
 
+const minCameraDistance = 1.35;
+const maxCameraDistance = 8;
+const dragRotationSpeed = 0.008;
+
+function getMinCameraDistance() {
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  const headerHeight = document.querySelector(".site-header")?.getBoundingClientRect().height ?? 0;
+  if (!width || !height) return minCameraDistance;
+
+  const edgeInset = 24;
+  const availableWidth = Math.max(1, width - edgeInset * 2);
+  const availableHeight = Math.max(1, height - headerHeight - edgeInset * 2);
+  const visibleFraction = Math.min(availableWidth, availableHeight) / height;
+  const halfFovTangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+
+  return Math.max(
+    minCameraDistance,
+    Math.sqrt(1 + 1 / (visibleFraction * visibleFraction * halfFovTangent * halfFovTangent))
+  );
+}
+
+function updateCameraFraming() {
+  const height = canvas.clientHeight;
+  const headerHeight = document.querySelector(".site-header")?.getBoundingClientRect().height ?? 0;
+  const targetY = height ? camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * headerHeight / height : 0;
+
+  camera.position.set(0, targetY, camera.position.z);
+  camera.lookAt(0, targetY, 0);
+}
+
+function zoomTo(distance) {
+  const minDistance = getMinCameraDistance();
+  camera.position.z = THREE.MathUtils.clamp(distance, minDistance, Math.max(minDistance, maxCameraDistance));
+  updateCameraFraming();
+}
+
+canvas.addEventListener("wheel", (event) => {
+  event.preventDefault();
+  zoomTo(camera.position.z * Math.exp(event.deltaY * 0.001));
+}, { passive: false });
+
+const activeTouches = new Map();
+let previousPinchDistance = null;
+let isDragging = false;
+let previousPointerX = null;
+
+function getPinchDistance() {
+  const points = [...activeTouches.values()];
+  if (points.length !== 2) return null;
+
+  return Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+}
+
+canvas.addEventListener("pointerdown", (event) => {
+  if (event.pointerType === "mouse") {
+    if (event.button !== 0) return;
+    isDragging = true;
+    previousPointerX = event.clientX;
+    canvas.setPointerCapture(event.pointerId);
+    return;
+  }
+
+  if (event.pointerType !== "touch") return;
+
+  activeTouches.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  canvas.setPointerCapture(event.pointerId);
+  previousPinchDistance = getPinchDistance();
+});
+
+canvas.addEventListener("pointermove", (event) => {
+  if (event.pointerType === "mouse" && isDragging) {
+    mars.rotation.y += (event.clientX - previousPointerX) * dragRotationSpeed;
+    previousPointerX = event.clientX;
+    return;
+  }
+
+  if (!activeTouches.has(event.pointerId)) return;
+
+  activeTouches.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  const pinchDistance = getPinchDistance();
+
+  if (pinchDistance !== null && previousPinchDistance !== null) {
+    zoomTo(camera.position.z * previousPinchDistance / pinchDistance);
+  }
+
+  previousPinchDistance = pinchDistance;
+});
+
+function endTouch(event) {
+  if (event.pointerType === "mouse") {
+    isDragging = false;
+    previousPointerX = null;
+    return;
+  }
+
+  if (!activeTouches.delete(event.pointerId)) return;
+  previousPinchDistance = getPinchDistance();
+}
+
+canvas.addEventListener("pointerup", endTouch);
+canvas.addEventListener("pointercancel", endTouch);
+
 function resize() {
   const width = canvas.clientWidth;
   const height = canvas.clientHeight;
@@ -32,9 +135,13 @@ function resize() {
   renderer.setSize(width, height, false);
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
+  zoomTo(camera.position.z);
 }
 
-new ResizeObserver(resize).observe(canvas);
+const resizeObserver = new ResizeObserver(resize);
+resizeObserver.observe(canvas);
+const header = document.querySelector(".site-header");
+if (header) resizeObserver.observe(header);
 resize();
 
 const clock = new THREE.Clock();

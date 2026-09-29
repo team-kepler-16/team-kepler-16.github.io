@@ -11,6 +11,7 @@ $(function () {
       home: "Home",
       about: "About",
       language: "Language: English. Switch to Spanish",
+      marsCanvas: "Mars globe. Click and drag horizontally to rotate it around its axis. Use the mouse wheel or a two-finger pinch to zoom.",
       mainTitle: "NASA: 50 Years of Landings on Mars",
       aboutTitle: "About",
       creditsTitle: "Credits",
@@ -23,6 +24,7 @@ $(function () {
       home: "Inicio",
       about: "Acerca de",
       language: "Idioma: español. Cambiar a inglés",
+      marsCanvas: "Globo de Marte. Hacé clic y arrastrá horizontalmente para rotarlo sobre su eje. Usá la rueda del mouse o el gesto de pellizcar con dos dedos para acercar o alejar.",
       mainTitle: "NASA: 50 años de aterrizajes en Marte",
       aboutTitle: "Acerca de",
       creditsTitle: "Créditos",
@@ -33,6 +35,7 @@ $(function () {
 
   function updateLocaleText() {
     $localeToggle.text(locale.toUpperCase()).attr("aria-label", labels[locale].language);
+    $("#mars-canvas").attr("aria-label", labels[locale].marsCanvas);
     $("[data-i18n]").each(function () {
       const key = $(this).data("i18n");
       $(this).text(labels[locale][key]);
