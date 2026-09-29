@@ -101,7 +101,7 @@ canvas.addEventListener("pointermove", (event) => {
   const pinchDistance = getPinchDistance();
 
   if (pinchDistance !== null && previousPinchDistance !== null) {
-    zoomTo(camera.zoom * previousPinchDistance / pinchDistance);
+    zoomTo(camera.zoom * pinchDistance / previousPinchDistance);
   }
 
   previousPinchDistance = pinchDistance;
